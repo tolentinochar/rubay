@@ -1,0 +1,134 @@
+
+<!-- Checkout Confirmation Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="checkoutModalLabel">Checkout</h4>
+      </div>
+      <div class="modal-body">
+        Checkout cart?
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Not yet</button>
+
+        <button type="button" class="btn btn-primary" onclick="window.location='/checkout'">Yes</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+<!-- Item Details/Form Modal -->
+<!--
+<div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="checkoutModalLabel">Sign Up</h4>
+      </div>
+      <div class="modal-body">
+        Checkout cart?
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Not yet</button>
+
+        <button type="button" class="btn btn-primary" onclick="window.location='/checkout'">Yes</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+-->
+
+<h2>Hi</h2>
+
+
+<p> <%= current_user.email %>  </p>
+<%= link_to 'Sign out', destroy_user_session_path, :method=>'delete' %>
+<!--
+<p> <% if current_user.cart_id==nil %> 
+		
+		<%= @aaa %>   
+	<% else %>
+		<%= current_user.cart_id %>
+		<%= @aaa %>
+	<% end %> </p>
+	Aaa: <%= @aaa %>
+	Aaa: <%= @total_price %>
+	<% if @item_price!=nil %>
+		Item: <%= @item_price[0] %>
+		Bhe: <%= @cart_itemm[0].item_id%>
+	<%end%>
+-->
+	<!--
+	<%= form_tag(controller: :home, action: :checkout)%>
+	<%= submit_tag "Checkout"%>
+	-->
+
+	<h4>My Cart</h4>
+	<% if @cart_items!=nil %>
+		<a data-toggle="modal" data-target="#checkoutModal">Checkout Cart</a>
+		
+		<% @cart_items.each do |t| %>
+			<li><%= t %> 
+				<%= form_for CartItem.new, url: '/removefromcart' do |f| %>
+				<%= hidden_field_tag :cart_item_id,  t.id %>
+				<%= f.submit 'Remove from Cart' %> 
+			<% end %>
+		<% end %>
+	<% end %>
+	
+
+ 
+
+
+	<h4>Items</h4>
+	<div id="owl-demo" class="owl-carousel owl-theme">
+		<% @all_items.each do |t| %>
+			<div class="item">
+				<% if t.img_url==nil %>
+				<img src="<%= image_path('black.jpg') %>" alt="<%= t.name %>" style="width:100px;height:100px">
+				<% else %>
+				<img src="<%= t.img_url %>" alt="<%= t.name %>" style="width:100px;height:100px">
+				<% end %>
+				<%= t.id %> <%= t.name %> <%= t.desc %> <%= t.unit_price %> <%= t.qty %> 
+				<% if t.qty>0 %>
+				<%= form_tag url_for(:controller=>"home", :action => "addtocart"), :method => "post" do %>
+				
+				<%= hidden_field_tag :item_id,  t.id %>
+				<%= number_field_tag :item_qty, 1, min: 1, max:t.qty, step:1 %>
+				<%= submit_tag 'Add to Cart' %> 
+				
+				<% end %>
+				<% end %>
+			</div>
+		<% end %>
+	</div>	
+	
+	<h4>Cart History</h4>
+	<ul>
+		<% if @user_carts.size>0 %>
+			<% for i in 0..@user_carts.size-1 %>
+				<li>Cart: <%= @user_carts[i] %>
+					<ul>
+						<% if @orders[i].size>0 %>
+							<%= @orders[i].each do |t|%>
+								<li>
+									Item: <%= t %>
+								</li>
+							<% end %>
+						<% end %>
+					</ul>
+				</li>
+			<% end %>
+		<% end %>	
+	</ul>
+<!--<img src='<%= image_path('white.jpg') %>' alt="Logo" style="width:304px;height:400px">
+<img src='http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Ruby_logo.svg/100px-Ruby_logo.svg.png' alt="Try" style="width:100px;height:100px">-->
+	
