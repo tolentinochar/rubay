@@ -6,63 +6,64 @@
 	<%= render "home/clear_cart_modal" %>
 <% end %>
 
-<p style="font-size: 180%;text-align:center"><span class="label label-primary" style="font-weight:normal;background-color:#FFF;color:#337ab7;border-color:#337ab7;border-style:solid;border-width:1px;padding:8px">Cart (<%= @cart_total_qty %> item/s for <%= number_to_currency( @cart_total_price, unit:"Php")%>)</span></p>
+<p style="font-size: 180%;text-align:center"><span class="label label-primary" style="font-weight:normal;background-color:#FFF;color:#337ab7;border-color:#337ab7;border-style:solid;border-width:1px;padding:8px">Cart <% if @cart.id!=current_user.cart_id%>for <%=@cart.checkout_date%> <%end%>(<%= @cart_total_qty %> item/s for <%= number_to_currency( @cart_total_price, unit:"Php")%>)</span></p>
 
 <% if user_signed_in? %>
   <%= render "home/checkout_cart_modal" %>
   <%= render "home/clear_cart_modal" %>
 <% end %>
 
-<table id="cart" class="table table-striped table-bordered" cellspacing="0">
-  <thead>
-    <tr>
-      <th>Item</th>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Unit Price</th>
-      <th>Quantity</th>
-      <% if @cart.id == current_user.cart_id %>
-        <th>Order</th>
-      <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <% for i in 0..@cart_items.size-1 %>
+<div class="dt-wrapper">
+  <table id="cart" class="table table-striped table-bordered" cellspacing="0">
+    <thead>
       <tr>
-        <td>
-          <% if @items[i].img_url==nil %>
-            <img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= @items[i].name %>" style="width:100px;height:100px">
-          <% else %>
-            <img src="<%= @items[i].img_url %>" alt="<%= @items[i].name %>" style="width:100px;height:100px">
-          <% end %>
-        </td>
-        <td style="padding:50px 0px 50px 0px"><%= link_to @items[i].name, controller:"home", action:"item", id:@items[i].id %></td>
-        <td style="padding:20px 0px 20px 0px"><%= @items[i].desc %></td>
-        <td style="padding:50px 0px 50px 0px">
-          <% if @cart.id == current_user.cart_id %>
-            <%= number_to_currency(@items[i].unit_price, unit:"Php") %>
-          <% else %>
-            <%= number_to_currency(@cart_items[i].item_unit_price, unit:"Php") %>
-          <% end %>
-        </td>
-        <td style="padding:50px 0px 50px 0px">
-          <%= @cart_items[i].item_qty %>
-        </td>
-        <% if @cart.id == current_user.cart_id %>    
-         <td style="padding:40px 0px 40px 0px">
-            <%= form_tag url_for(:controller=>"home", :action => "adjustorder"), :method => "post" do %>
-              <%= hidden_field_tag :cart_item_id,  @cart_items[i].id %>
-              <div class="input-group">
-                <%= number_field_tag :item_qty, @cart_items[i].item_qty, min: 0, max:@items[i].qty+@cart_items[i].item_qty, step:1, class:"form-control" %> <br/>
-                <span class="input-group-btn">
-                  <%= submit_tag 'Adjust Order', class:"btn btn-primary" %>
-                </span>
-              </div>
+        <th>Item</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <% if @cart.id == current_user.cart_id %>
+          <th>Order</th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% for i in 0..@cart_items.size-1 %>
+        <tr>
+          <td class="dt-shown-image">
+            <% if @items[i].img_url==nil %>
+              <img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= @items[i].name %>">
+            <% else %>
+              <img src="<%= @items[i].img_url %>" alt="<%= @items[i].name %>">
             <% end %>
           </td>
-        <% end %>
-          
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+          <td style="padding:50px 0px"><%= link_to @items[i].name, controller:"home", action:"item", id:@items[i].id %></td>
+          <td style="padding:20px 0px"><%= @items[i].desc %></td>
+          <td style="padding:50px 0px">
+            <% if @cart.id == current_user.cart_id %>
+              <%= number_to_currency(@items[i].unit_price, unit:"Php") %>
+            <% else %>
+              <%= number_to_currency(@cart_items[i].item_unit_price, unit:"Php") %>
+            <% end %>
+          </td>
+          <td style="padding:50px 0px">
+            <%= @cart_items[i].item_qty %>
+          </td>
+          <% if @cart.id == current_user.cart_id %>    
+           <td style="padding:40px 0px">
+              <%= form_tag url_for(:controller=>"home", :action => "adjustorder"), :method => "post" do %>
+                <%= hidden_field_tag :cart_item_id,  @cart_items[i].id %>
+                <div class="input-group">
+                  <%= number_field_tag :item_qty, @cart_items[i].item_qty, min: 0, max:@items[i].qty+@cart_items[i].item_qty, step:1, class:"form-control" %> <br/>
+                  <span class="input-group-btn">
+                    <%= submit_tag 'Adjust Order', class:"btn btn-primary" %>
+                  </span>
+                </div>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

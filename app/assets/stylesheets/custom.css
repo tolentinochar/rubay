@@ -1,3 +1,17 @@
+
+/* General */
+
+p.page-title {
+    font-size: 200%; 
+    text-align: center;
+}
+
+img {
+    max-width:100%;
+    max-height:100%;
+}
+
+
 a:link{
     color: #CC3300;
 }
@@ -10,33 +24,27 @@ a.btn.btn-danger{
     color: #FFF;
 }
 
-#catalog, #cart-history, #cart {
-    padding: 0px;
-    width: 90%;
-    margin-left: auto;
-    margin-right: auto;
+/* Datatables */
+/* Remove td padding stuff */
+table.table {
     text-align:center;
 }
 
-#catalog_length, #cart-history_length, #cart_length {
-    padding: 0px;
-    margin-left:50px;
+div.dt-wrapper{
+    width:90%;
+    margin-left: auto;
+    margin-right: auto;    
 }
 
-#catalog_filter, #cart-history_filter, #cart_filter {
-    padding: 0px;
-    margin-right:50px;
+td.dt-shown-image {
+    width:10%;
+    height:10%;
 }
 
-#catalog_info, #cart-history_info, #cart_info {
-    padding: 0px;
-    margin-left:50px;
-}
 
-#catalog_paginate, #cart-history_paginate, #cart_paginate {
-    padding: 0px;
-    margin-right:50px;
-}
+
+
+
 
 
 body { font-size: 140%; }
@@ -62,6 +70,9 @@ body { font-size: 140%; }
 }
 
 #sync2 {
+    width:95%;
+    margin-left:auto;
+    margin-right:auto;
     margin-bottom:5px;
 }
 
@@ -105,7 +116,7 @@ body { font-size: 140%; }
 
 #sync2 .item{
     background: #E9E9E9;
-    padding: 10px 0px;
+    padding: 5px 5px;
     margin: 5px;
     color: #FFF;
     border-color:#C9C9C9;

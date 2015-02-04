@@ -3,56 +3,57 @@
 
 <%= render "users/welcome/login_modal" %>
 <% if user_signed_in? %>
-	<%= render "home/checkout_cart_modal" %>
-	<%= render "home/clear_cart_modal" %>
+  <%= render "home/checkout_cart_modal" %>
+  <%= render "home/clear_cart_modal" %>
 <% end %>
 
-<p style="font-size: 200%; text-align: center;"><span class="label label-primary">Item Catalog</span></p>
+<p class="page-title"><span class="label label-primary">Item Catalog</span></p>
 
-<table id="catalog"  class="table table-striped table-bordered" cellspacing="0" >
-  <thead>
-    <tr>
-      <th>Item</th>
-      <th>Name</th>
-      <th>Description</th>
-      <th>Price</th>
-      <th>Stock</th>
-      <th>Order</th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @all_items.each do |t| %>
-    <tr>
-      <td>
-      	<% if t.img_url==nil %>
-			<img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= t.name %>" style="width:100px;height:100px">
-		<% else %>
-			<img src="<%= t.img_url %>" alt="<%= t.name %>" style="width:100px;height:100px">
-		<% end %>
-      </td>
-      <td style="padding:50px 0px 50px 0px"><%= link_to t.name, controller:"home", action:"item", id:t.id %></td>
-      <td style="padding:20px 0px 20px 0px"><%= t.desc %></td>
-      <td style="padding:50px 0px 50px 0px"><%= number_to_currency(t.unit_price, unit:"Php") %></td>
-      <td style="padding:50px 0px 50px 0px"><%= t.qty %></td>
-      <td style="padding:40px 0px 40px 0px">
-      	<% if t.qty>0 %>
-			<%= form_tag url_for(:controller=>"home", :action => "addtocart"), :method => "post" do %>
-				<%= hidden_field_tag :item_id,  t.id %>
-				<div class="input-group">
-					<%= number_field_tag :item_qty, 1, min: 1, max:t.qty, step:1, class:"form-control" %> <br/>
-					<span class="input-group-btn">
-						<% if user_signed_in? %>
-							<%= submit_tag 'Add to Cart', class:"btn btn-primary" %>
-						<% else %>
-							<%= link_to "Add to Cart", "#loginModal", "data-toggle" => "modal", :class => 'btn btn-primary' %>
-						<% end %>
-					</span>
-				</div>
-			<% end %>
-		<% end %>
-      </td>
-    </tr>
-    <% end %>
-  </tbody>
-</table>
+<div class="dt-wrapper">
+  <table id="catalog"  class="table table-striped table-bordered" cellspacing="0" >
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Price</th>
+        <th>Stock</th>
+        <th>Order</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @all_items.each do |t| %>
+        <tr>
+          <td class="dt-shown-image">
+            <% if t.img_url==nil %>
+              <img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= t.name %>">
+            <% else %>
+              <img src="<%= t.img_url %>" alt="<%= t.name %>" >
+            <% end %>
+          </td>
+          <td style="padding: 50px 0px;"><%= link_to t.name, controller:"home", action:"item", id:t.id %></td>
+          <td style="padding:20px 0px"><%= t.desc %></td>
+          <td style="padding:50px 0px;width:12%"><%= number_to_currency(t.unit_price, unit:"Php") %></td>
+          <td style="padding:50px 0px;width:8%"><%= t.qty %></td>
+          <td style="padding:40px 0px;width:20%">
+            <% if t.qty>0 %>
+              <%= form_tag url_for(:controller=>"home", :action => "addtocart"), :method => "post" do %>
+                <%= hidden_field_tag :item_id,  t.id %>
+                <div class="input-group">
+                  <%= number_field_tag :item_qty, 1, min: 1, max:t.qty, step:1, class:"form-control" %> <br/>
+                  <span class="input-group-btn">
+                    <% if user_signed_in? %>
+                      <%= submit_tag 'Add to Cart', class:"btn btn-primary" %>
+                    <% else %>
+                      <%= link_to "Add to Cart", "#loginModal", "data-toggle" => "modal", :class => 'btn btn-primary' %>
+                    <% end %>
+                  </span>
+                </div>
+              <% end %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

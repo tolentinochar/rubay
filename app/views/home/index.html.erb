@@ -12,11 +12,11 @@
 <div id="sync1" class="owl-carousel owl-theme" >
 	<% @top_items.each do |t| %>
 		<div class="item row" >
-			<div class="item-img col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center">
+			<div class="item-img col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center" style="height:270px;">
 				<% if t.img_url==nil %>
-					<img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= t.name %>" style="max-width:100%;max-height:100%;">
+					<img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= t.name %>" >
 				<% else %>
-					<img src="<%= t.img_url %>" alt="<%= t.name %>" style="max-width:100%;max-height:100%">
+					<img src="<%= t.img_url %>" alt="<%= t.name %>" >
 				<% end %>
 			</div>
 			<div class="item-desc col-xs-4 col-sm-4 col-md-4 col-lg-4" style="padding:10px 10px 10px 20px;">
@@ -59,7 +59,7 @@
 			<% if t.img_url==nil %>
 				<img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= t.name %>" style="max-width:100%;max-height:100%">
 			<% else %>
-				<img src="<%= t.img_url %>" alt="<%= t.name %>" style="max-width:100%;max-height:100%">
+				<img src="<%= t.img_url %>" alt="<%= t.name %>" >
 			<% end %>
 		</div>
 	<% end %>
