@@ -24,6 +24,10 @@ a.btn.btn-danger{
     color: #FFF;
 }
 
+a.btn.btn-primary{
+    color: #FFF;
+}
+
 /* Datatables */
 /* Remove td padding stuff */
 table.table {
@@ -41,11 +45,7 @@ td.dt-shown-image {
     height:10%;
 }
 
-
-
-
-
-
+/*Owl Carousel*/
 
 body { font-size: 140%; }
 
@@ -135,9 +135,7 @@ body { font-size: 140%; }
   background: #FFFFFF;
 }
  
-
-
-
+/*Login/Signup Page*/
 
 .wrapper {  
     margin-top: 80px;
