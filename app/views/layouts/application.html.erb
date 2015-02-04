@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>ShoppingCart</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
-
-<p class="notice"><%= notice %></p>
-<p class="alert"><%= alert %></p>
-
-<%= yield %>
-
-</body>
+	<head>
+		<title><%= yield(:title) %></title>
+		<link rel="shortcut icon" type="image/png"  href="<%= image_path('favicon.png') %>?v=0">
+		
+		<%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+		<%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+		<%= csrf_meta_tags %>
+	</head>
+	<body style="background:<%=yield(:bgcolor)%>">
+		<%= render 'layouts/navigation'%>
+		</br></br></br>
+		<% if alert %>
+			<div class="alert alert-danger alert-dismissable">	
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				<%= alert %>
+			</div>
+		<% end %>
+		<%= yield %>
+	</body>
 </html>

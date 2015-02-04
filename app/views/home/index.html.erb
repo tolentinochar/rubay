@@ -1,134 +1,71 @@
+<% content_for :title, "RuBay" %>
+<% content_for :bgcolor, "#FFFFFF" %>
 
-<!-- Checkout Confirmation Modal -->
-<div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="checkoutModalLabel">Checkout</h4>
-      </div>
-      <div class="modal-body">
-        Checkout cart?
-      </div>
-      
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Not yet</button>
+<%= render "users/welcome/login_modal" %>
+<% if user_signed_in? %>
+	<%= render "home/checkout_cart_modal" %>
+	<%= render "home/clear_cart_modal" %>
+<% end %>
 
-        <button type="button" class="btn btn-primary" onclick="window.location='/checkout'">Yes</button>
-      </div>
-      
-    </div>
-  </div>
-</div>
+<p style="font-size: 200%; text-align: center"><span class="label label-danger">Featured Items</span></p>
 
-
-<!-- Item Details/Form Modal -->
-<!--
-<div class="modal fade" id="checkoutModal" tabindex="-1" role="dialog" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="checkoutModalLabel">Sign Up</h4>
-      </div>
-      <div class="modal-body">
-        Checkout cart?
-      </div>
-      
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Not yet</button>
-
-        <button type="button" class="btn btn-primary" onclick="window.location='/checkout'">Yes</button>
-      </div>
-      
-    </div>
-  </div>
-</div>
--->
-
-<h2>Hi</h2>
-
-
-<p> <%= current_user.email %>  </p>
-<%= link_to 'Sign out', destroy_user_session_path, :method=>'delete' %>
-<!--
-<p> <% if current_user.cart_id==nil %> 
-		
-		<%= @aaa %>   
-	<% else %>
-		<%= current_user.cart_id %>
-		<%= @aaa %>
-	<% end %> </p>
-	Aaa: <%= @aaa %>
-	Aaa: <%= @total_price %>
-	<% if @item_price!=nil %>
-		Item: <%= @item_price[0] %>
-		Bhe: <%= @cart_itemm[0].item_id%>
-	<%end%>
--->
-	<!--
-	<%= form_tag(controller: :home, action: :checkout)%>
-	<%= submit_tag "Checkout"%>
-	-->
-
-	<h4>My Cart</h4>
-	<% if @cart_items!=nil %>
-		<a data-toggle="modal" data-target="#checkoutModal">Checkout Cart</a>
-		
-		<% @cart_items.each do |t| %>
-			<li><%= t %> 
-				<%= form_for CartItem.new, url: '/removefromcart' do |f| %>
-				<%= hidden_field_tag :cart_item_id,  t.id %>
-				<%= f.submit 'Remove from Cart' %> 
-			<% end %>
-		<% end %>
-	<% end %>
-	
-
- 
-
-
-	<h4>Items</h4>
-	<div id="owl-demo" class="owl-carousel owl-theme">
-		<% @all_items.each do |t| %>
-			<div class="item">
+<div id="sync1" class="owl-carousel owl-theme" >
+	<% @top_items.each do |t| %>
+		<div class="item row" >
+			<div class="item-img col-xs-8 col-sm-8 col-md-8 col-lg-8 text-center">
 				<% if t.img_url==nil %>
-				<img src="<%= image_path('black.jpg') %>" alt="<%= t.name %>" style="width:100px;height:100px">
+					<img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= t.name %>" style="max-width:100%;max-height:100%;">
 				<% else %>
-				<img src="<%= t.img_url %>" alt="<%= t.name %>" style="width:100px;height:100px">
-				<% end %>
-				<%= t.id %> <%= t.name %> <%= t.desc %> <%= t.unit_price %> <%= t.qty %> 
-				<% if t.qty>0 %>
-				<%= form_tag url_for(:controller=>"home", :action => "addtocart"), :method => "post" do %>
-				
-				<%= hidden_field_tag :item_id,  t.id %>
-				<%= number_field_tag :item_qty, 1, min: 1, max:t.qty, step:1 %>
-				<%= submit_tag 'Add to Cart' %> 
-				
-				<% end %>
+					<img src="<%= t.img_url %>" alt="<%= t.name %>" style="max-width:100%;max-height:100%">
 				<% end %>
 			</div>
-		<% end %>
-	</div>	
-	
-	<h4>Cart History</h4>
-	<ul>
-		<% if @user_carts.size>0 %>
-			<% for i in 0..@user_carts.size-1 %>
-				<li>Cart: <%= @user_carts[i] %>
-					<ul>
-						<% if @orders[i].size>0 %>
-							<%= @orders[i].each do |t|%>
-								<li>
-									Item: <%= t %>
-								</li>
+			<div class="item-desc col-xs-4 col-sm-4 col-md-4 col-lg-4" style="padding:10px 10px 10px 20px;">
+				<div class="row" >
+					<div class="item-desc col-xs-12 col-sm-12 col-md-12 col-lg-12">
+						<h3 class="text-center"> <%= link_to t.name, controller:"home", action:"item", id:t.id %> </h3>
+						<p> <%= t.desc %> </p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="item-desc col-xs-12 col-sm-12 col-md-12 col-lg-12">
+						<br />
+						<p> Get one for <%= number_to_currency(t.unit_price, unit:"Php") %> (only <%= t.qty %> left)!</p>
+					
+						<% if t.qty>0 %>
+							<%= form_tag url_for(:controller=>"home", :action => "addtocart"), :method => "post" do %>
+								<%= hidden_field_tag :item_id,  t.id %>
+								<div class="input-group">
+									<%= number_field_tag :item_qty, 1, min: 1, max:t.qty, step:1, class:"form-control"  %>
+									<span class="input-group-btn">
+										<% if user_signed_in? %>
+											<%= submit_tag 'Add to Cart', class:"btn btn-danger" %>
+										<% else %>
+											<%= link_to "Add to Cart", "#loginModal", "data-toggle" => "modal", :class => 'btn btn-danger' %>
+										<% end %>
+									</span>
+								</div>
 							<% end %>
 						<% end %>
-					</ul>
-				</li>
-			<% end %>
-		<% end %>	
-	</ul>
-<!--<img src='<%= image_path('white.jpg') %>' alt="Logo" style="width:304px;height:400px">
-<img src='http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Ruby_logo.svg/100px-Ruby_logo.svg.png' alt="Try" style="width:100px;height:100px">-->
+					</div>
+				</div>
+			</div>	
+		</div>		
+	<% end %>
+</div>	
 	
+<div id="sync2" class="owl-carousel owl-theme">
+	<% @top_items.each do |t| %>
+		<div class="item">
+			<% if t.img_url==nil %>
+				<img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= t.name %>" style="max-width:100%;max-height:100%">
+			<% else %>
+				<img src="<%= t.img_url %>" alt="<%= t.name %>" style="max-width:100%;max-height:100%">
+			<% end %>
+		</div>
+	<% end %>
+</div>
+
+<div class="customNavigation">
+	<a class="btn prev btn-default" style="display: inline-block; color:#CC3300">Previous</a>
+	<a class="btn next btn-default" style="display: inline-block; color:#CC3300">Next</a>
+</div>

@@ -1,0 +1,115 @@
+
+
+
+
+
+
+
+<h4>My Cart</h4>
+	<%= @aaa %>
+	<%= @current_total_price %>
+	<% if @current_cart_items!=nil && @current_cart_items.size>0 %>
+		<a data-toggle="modal" data-target="#checkoutCartModal">Checkout Cart</a>
+		<a data-toggle="modal" data-target="#clearCartModal">Clear Cart</a>
+		<ul>
+			<% for i in 0..@current_cart_items.size-1 %>
+				<li>
+					 || Item Name: <%= @current_items[i].name %>
+					 || Unit Price: <%= @current_items[i].unit_price %>
+					
+					<%= form_tag url_for(:controller=>"home", :action => "removefromcart"), :method => "post" do %>
+						<%= hidden_field_tag :cart_item_id,  @current_cart_items[i].id %>
+						<%= number_field_tag :item_qty, @current_cart_items[i].item_qty, min: 1, max:@current_cart_items[i].item_qty, step:1 %>
+						<%= submit_tag 'Remove from Cart' %> 
+					<% end %>
+				</li>		
+			<% end %>
+		</ul>
+	<% end %>
+	
+
+ 
+
+
+	<h4>Items</h4>
+	<div id="isotope-demo">
+		<% @all_items.each do |t| %>
+			<div class='item'>
+				<div class="all-items-name" data-name='<%= t.name %>' >
+				</div> 
+					<%=t.name%>
+				<% if t.img_url==nil %>
+					<img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= t.name %>" style="width:100px;height:100px">
+				<% else %>
+					<img src="<%= t.img_url %>" alt="<%= t.name %>" style="width:100px;height:100px">
+				<% end %>
+				<!--
+				 || Item ID: <%= t.id %>
+				 || Item Name: <%= t.name %>
+				 || Item Description: <%= t.desc %>
+				 || Item Unit Price: <%= t.unit_price %>
+				 || Item Stock: <%= t.qty %> 
+				-->
+				<% if t.qty>0 %>
+					<%= form_tag url_for(:controller=>"home", :action => "addtocart"), :method => "post" do %>
+						<%= hidden_field_tag :item_id,  t.id %>
+						<%= number_field_tag :item_qty, 1, min: 1, max:t.qty, step:1 %>
+						<%= submit_tag 'Add to Cart' %> 
+					<% end %>
+				<% end %>
+			
+			</div>
+		<% end %>
+	</div>
+
+	<!--div id="owl-demo" class="owl-carousel owl-theme">
+		<% @all_items.each do |t| %>
+			<div class="item">
+				<% if t.img_url==nil %>
+					<img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= t.name %>" style="width:100px;height:100px">
+				<% else %>
+					<img src="<%= t.img_url %>" alt="<%= t.name %>" style="width:100px;height:100px">
+				<% end %>
+				
+				 || Item ID: <%= t.id %>
+				 || Item Name: <%= t.name %>
+				 || Item Description: <%= t.desc %>
+				 || Item Unit Price: <%= t.unit_price %>
+				 || Item Stock: <%= t.qty %> 
+				
+				<% if t.qty>0 %>
+					<%= form_tag url_for(:controller=>"home", :action => "addtocart"), :method => "post" do %>
+						<%= hidden_field_tag :item_id,  t.id %>
+						<%= number_field_tag :item_qty, 1, min: 1, max:t.qty, step:1 %>
+						<%= submit_tag 'Add to Cart' %> 
+					<% end %>
+				<% end %>
+			</div>
+		<% end %>
+	</div-->	
+	
+	<!--h4>Cart History</h4>
+	<ul>
+		<% if @past_carts.size>0 %>
+			<% for i in 0..@past_carts.size-1 %>
+				<li>Cart: <br />
+					 || Checkout Date: <%= @past_carts[i].checkout_date %>
+					 || Total Price: <%= @past_carts[i].total_price %>
+					<ul>
+						<% if @past_cart_items[i].size>0 %>
+							<% for j in 0..@past_cart_items[i].size-1 %>
+								<li>
+									 || Item Name: <%= @past_items[i][j].name %>
+									 || Unit Price: <%= @past_cart_items[i][j].item_unit_price %>
+									 || Quantity Bought: <%= @past_cart_items[i][j].item_qty %>
+								</li>
+							<% end %>
+						<% end %>
+					</ul>
+				</li>
+			<% end %>
+		<% end %>	
+	</ul-->
+<!--<img src='<%= image_path('white.jpg') %>' alt="Logo" style="width:304px;height:400px">
+<img src='http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Ruby_logo.svg/100px-Ruby_logo.svg.png' alt="Try" style="width:100px;height:100px">-->
+	

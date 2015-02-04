@@ -1,0 +1,48 @@
+<% content_for :title, "RuBay: Cart History" %>
+<% content_for :bgcolor, "#FFFFFF" %>
+
+<p style="font-size: 200%; text-align: center;"><span class="label label-primary">Order History</span></p>
+
+<% if user_signed_in? %>
+	<%= render "home/checkout_cart_modal" %>
+	<%= render "home/clear_cart_modal" %>
+<% end %>
+
+<table id="cart-history" class="table table-striped table-bordered" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Checkout Date</th>
+      <th>Item</th>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Unit Price</th>
+      <th>Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for i in 0..@past_carts.size-1 %>
+      <% for j in 0..@past_cart_items[i].size-1 %>
+        <tr>
+          <td style="padding:40px 0px 40px 0px">
+          <%= form_tag url_for(:controller=>"home", :action => "cart"), :method => "post" do %>
+                  <%= hidden_field_tag :cart_id, @past_carts[i].id %>
+                  <%= submit_tag @past_carts[i].checkout_date, class:'btn-link' %> 
+              <% end %>
+              <label style="visibility:hidden"><%=@past_carts[i].checkout_date%></label>
+          </td>
+          <td>
+            <% if @past_items[i][j].img_url==nil %>
+              <img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= @past_items[i][j].name %>" style="width:100px;height:100px">
+            <% else %>
+              <img src="<%= @past_items[i][j].img_url %>" alt="<%= @past_items[i][j].name %>" style="width:100px;height:100px">
+            <% end %>
+          </td>
+          <td style="padding:50px 0px 50px 0px"><%= link_to @past_items[i][j].name, controller:"home", action:"item", id:@past_items[i][j].id %></td>
+          <td style="padding:20px 0px 20px 0px"><%= @past_items[i][j].desc %></td>
+          <td style="padding:50px 0px 50px 0px"><%= number_to_currency(@past_cart_items[i][j].item_unit_price, unit:"Php") %></td>
+          <td style="padding:50px 0px 50px 0px"><%= @past_cart_items[i][j].item_qty %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

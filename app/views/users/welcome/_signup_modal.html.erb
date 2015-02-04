@@ -1,0 +1,31 @@
+<!-- Sign Up Modal -->
+<div class="modal fade bs-example-modal-sm" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h3 class="modal-title" id="signupModalLabel" style="font-weight:bold">Sign up</h3>
+			</div>
+			<div class="modal-body">
+				<%= form_for(User.new, url: '/signup') do |f| %>
+					<div class="field" style="margin-bottom:10px">
+				      <%= f.email_field :email, autofocus: true, class:"form-control", placeholder: "Email address" %>
+				    </div>
+				    <div class="field">
+				      <%= f.password_field :password, autocomplete: "off", class:"form-control", placeholder: "Password" %>
+				    </div>
+				    <div class="field">
+				      <%= f.password_field :password_confirmation, autocomplete: "off", class:"form-control", placeholder: "Confirm Password" %>
+				    </div>
+			</div>
+			<div class="modal-footer">
+				<div class="actions" style="margin-top:10px">
+			      <%= f.submit "Sign up", class:"btn btn-danger btn-sm", "style" => "width:48%; display:inline-block;margin-bottom:5px", data: {toggle:"modal"} %>
+			      <%= link_to "Log in", '/login', :class => 'btn btn-primary btn-sm', "style" => "width:48%;display:inline-block;margin-bottom:5px" %>
+			      <!--%= link_to "Forgot your password?", '/password', :class => 'btn btn-block btn-sm' %-->
+			    </div>
+			  <% end %>
+			</div>
+		</div>
+	</div>
+</div>

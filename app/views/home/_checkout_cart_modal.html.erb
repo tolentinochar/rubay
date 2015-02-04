@@ -1,0 +1,28 @@
+<!-- Checkout Confirmation Modal -->
+<div class="modal fade" id="checkoutCartModal" tabindex="-1" role="dialog" aria-labelledby="checkoutCartModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="checkoutCartModalLabel">Checkout Cart</h4>
+			</div>
+			<div class="modal-body">
+				<% if @current_total_qty < 2 %>
+					There is <b><%=@current_total_qty%> item </b> in your cart, all for <b><%=number_to_currency(@current_total_price, unit:"Php")%></b>.<br/><br/>Get it 
+				<%else%>
+					There are <b><%=@current_total_qty%> items </b> in your cart, all for <b><%=number_to_currency(@current_total_price, unit:"Php")%></b>. Once checkout has been confirmed, your <b>default billing information</b> will be used. <br/><br/>Get these 
+				<%end%>
+				for free when you correctly type which grade you will give Char!<br/>
+				<em>(Hint: "A")</em><br/><br/>
+				
+				<%= form_tag url_for(:controller=>"home", :action => "checkoutcart"), :method => "post" do %>
+					<%= text_field_tag :payment, "A", class:"form-control" %>
+			</div>
+			<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Not yet</button>
+					<%= submit_tag 'Yes', class: "btn btn-primary", data: {toggle:"modal"} %> 
+				<% end %>
+			</div>
+		</div>
+	</div>
+</div>

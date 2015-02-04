@@ -14,5 +14,8 @@
 //= require jquery_ujs
 //= require bootstrap.min
 //= require owl.carousel.min
+//= require isotope.pkgd.min
+//= require jquery.dataTables.min
+//= require dataTables.bootstrap
 //= require turbolinks
 //= require_tree .

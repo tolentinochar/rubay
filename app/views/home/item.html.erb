@@ -1,0 +1,61 @@
+<% content_for :title, "RuBay: View Item" %>
+<% content_for :bgcolor, "#FFFFFF" %>
+
+<%= render "users/welcome/login_modal" %>
+<% if user_signed_in? %>
+	<%= render "home/checkout_cart_modal" %>
+	<%= render "home/clear_cart_modal" %>
+<% end %>
+
+<p style="font-size: 200%; text-align: center"><span class="label label-danger">View Item</span></p>
+
+<div style="text-align:center;border-style:solid;border-width:1px;border-color:#C9C9C9;width:80%;height:100%; margin-left:auto;margin-right:auto;margin-top:10px; margin-bottom: 20px">
+	<% if @item.img_url==nil %>
+		<img src="<%= image_path('Logo_Ruby.png') %>" alt="<%= @item.name %>" style="max-width:100%;max-height:100%;">
+	<% else %>
+		<img src="<%= @item.img_url %>" alt="<%= @item.name %>" style="max-width:100%;max-height:100%;">
+	<% end %>
+</div>
+<div style="text-align:center;width:80%; margin-left:auto;margin-right:auto;margin-top:20px;">
+	<div class="row"  >
+		<div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
+			<div class="list-group">
+			  <a class="list-group-item active" style="font-size:150%; background-color: #d9534f;border-color:#d43f3a;">
+			    <%= @item.name %>
+			  </a>
+			  <a class="list-group-item">Price: <%= number_to_currency(@item.unit_price, unit:"Php") %></a>
+			  <a class="list-group-item">Stocks: <%= @item.qty %></a>
+			  <% if @item.qty>0 %>
+				<a class="list-group-item">
+					<div class="row">
+					<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3"></div>
+					<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+					<%= form_tag url_for(:controller=>"home", :action => "addtocart"), :method => "post" do %>
+						<%= hidden_field_tag :item_id,  @item.id %>
+						<div class="input-group">
+							<%= number_field_tag :item_qty, 1, min: 1, max:@item.qty, step:1, class:"form-control" %> <br/>
+							<span class="input-group-btn">
+								<% if user_signed_in? %>
+									<%= submit_tag 'Add to Cart', class:"btn btn-danger" %>
+								<% else %>
+									<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#loginModal">
+									  Add to Cart
+									</button>
+									
+								<% end %>
+							</span>
+						</div>
+					<% end %>
+				</div>
+				</div>
+				</a>
+			<% end %>
+			  
+			</div>
+		</div>
+		<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding:10px 10px 10px 10px;text-align:center;">
+			<p style="font-style:italic; font-size:120%"><%= @item.desc %></p>
+		</div>
+	</div>	
+</div>
+

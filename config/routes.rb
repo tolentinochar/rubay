@@ -1,15 +1,41 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { sessions: "users/sessions" }
+  devise_for :users, controllers: { sessions: "users/sessions", registrations: "users/registrations" }#, :path_names => {:sign_up => 'signup', :sign_in => 'login', :sign_out => 'logout'}
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
+  
   root to: 'home#index'
+  post '/' => 'home#index'
+  
+  post '/cart' => 'home#cart'
+  get '/cart' => 'home#cart'
+  
+  post '/item/:id', :controller => 'home', :action => 'item'
+  get '/item/:id', :controller => 'home', :action => 'item'
+  
+  get '/catalog' => 'home#catalog'
+  post '/catalog' => 'home#catalog'
+
+  get '/carthistory' => 'home#carthistory'
+  post '/carthistory' => 'home#carthistory'
+
+  post '/adjustorder' => 'home#adjustorder'
   post '/addtocart' => 'home#addtocart'
   post '/removefromcart' => 'home#removefromcart'
-  # post '/checkout' => 'home#checkout'
-  get '/checkout' => 'home#checkout'
+  post '/checkoutcart' => 'home#checkoutcart'
+  post '/clearcart' => 'home#clearcart'
+
+  devise_scope :user do
+     get 'signup', to: 'users/registrations#new'
+     post 'signup', to: 'users/registrations#create'
+     get 'login', to: 'users/sessions#new'
+     post 'login', to: 'users/sessions#create'
+     get 'logout', to: 'users/sessions#destroy'
+  end
+
   # resources :home do
   #  post :checkout, on: :collection
   # end

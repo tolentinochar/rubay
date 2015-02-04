@@ -1,0 +1,33 @@
+<% if user_signed_in? %>
+	<% if @current_cart_items.size > 0 %>
+		<li class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"> My Cart <% if @current_total_qty>0 %><span class="badge notification-icon"><%= @current_total_qty %></span><% end %> <% if @current_cart_items.size > 0 %><span class="caret"></span><% end %></a>
+			<ul id="dropdown-menu" class="dropdown-menu dropdown-menu-right" role="menu">
+				
+					<%= form_tag url_for(:controller=>"home", :action => "cart"), :method => "post" do %>
+		            	<%= hidden_field_tag :cart_id, current_user.cart_id %>
+		            	<li><%= submit_tag 'View Cart', class:'btn-link' %></li> 
+	         	 	<% end %>
+					<li><%= link_to 'Checkout', "#checkoutCartModal", "data-toggle" => "modal" %></li>
+					<li><%= link_to 'Clear', "#clearCartModal", "data-toggle" => "modal" %></li>
+				
+			</ul>
+		</li>
+	<% else %>
+		<li><a>My Cart</a></li>
+	<% end %>
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> <%= current_user.email %> <span class="caret"></span></a>
+		<ul id="dropdown-menu" class="dropdown-menu dropdown-menu-right" role="menu">
+			<% if @past_carts.size > 0 %>
+				<li><%= link_to 'Cart History', '/carthistory', method:'post' %></li>
+			<% else %>
+				<li class="disabled"><%= link_to 'Cart History' %></li>
+			<% end %>
+			<!--li><%= link_to 'Edit account', '/edit' %></li-->
+			<li><%= link_to 'Sign out', destroy_user_session_path, :method=>'delete' %></li>
+		</ul>
+	</li>
+<% else %>
+	<li><%= link_to 'Log in', '/login' %></li>
+<% end %>

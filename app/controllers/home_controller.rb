@@ -1,89 +1,190 @@
 class HomeController < ApplicationController
-	before_action :authenticate_user!
+	before_action :authenticate_user!, :except => [:catalog, :index, :item]
 	
 	def index
-		if current_user.cart_id==nil
-			@active_cart = Cart.create(user_id:current_user.id)
-			current_user.update(cart_id:@active_cart.id)
+		if current_user != nil
+			if current_user.cart_id==nil
+				current_user.update(cart_id:Cart.create(user_id:current_user.id).id)
+			end
+			reloadVariables
+		else
+			@top_items = Item.order(qty_sold: :desc).where("qty>0").limit(10)
+			@all_items = Item.all
+			render :index
 		end
-		@aaa= 'bbb'
-		
+	end
+
+	def carthistory
 		reloadVariables
+		render 'app/views/home/cart_history.html.erb'
+	end
+
+	def cart
+		# default is current cart_id
+		# show all query_cart_items of that
+		# mkae sure to have the variable @query_cart_id checkout will appear here
+		reloadVariables
+		@cart = Cart.find_by(id:current_user.cart_id)
+		if params[:cart_id]!=nil
+			@cart = Cart.find_by(id:params[:cart_id].to_i)
+		end
+		@cart_items = CartItem.where(cart_id:@cart.id);
+		@cart_total_qty=0
+		@cart_total_price=0
+		@items = Array.new(@cart_items.size)
+		for i in 0..@cart_items.size-1
+			@items[i] = Item.find_by(id:@cart_items[i].item_id)
+			@cart_total_qty+=@cart_items[i].item_qty
+			@cart_total_price+=(@items[i].unit_price*@cart_items[i].item_qty)
+		end
+		if @cart.id!=current_user.cart_id
+			@cart_total_price=@cart.total_price
+		end		
+		render 'app/views/home/cart.html.erb'
+	end
+
+	def item
+		if current_user != nil
+			reloadVariables
+		end
+		item_id=params[:id]
+		@item = Item.find_by(id:item_id)
+		render 'app/views/home/item.html.erb'
+	end
+
+	def catalog
+		if current_user != nil
+			reloadVariables
+		else
+			@all_items = Item.all
+		end
+
+		render 'app/views/home/catalog.html.erb'
 	end
 
 	def addtocart
-		cart_item = CartItem.find_by(cart_id:current_user.cart_id, item_id:params[:item_id])
-		if cart_item==nil
-			cart_item = CartItem.create(cart_id:current_user.cart_id, item_id:params[:item_id], item_qty:0) 
-		end	
-		cart_item.update(item_qty:cart_item.item_qty+params[:item_qty].to_i)	
+		item_id=params[:item_id].to_i
+		item_qty=params[:item_qty].to_i
 		
-		item = Item.find_by(id:params[:item_id])
-		item.update(qty:item.qty-params[:item_qty].to_i)
-		
-		reloadVariables
+		additem(item_id, item_qty)		
+	end
+
+	def adjustorder
+		item_qty = params[:item_qty].to_i
+		cart_item = CartItem.find_by(id:params[:cart_item_id])
+		if item_qty < cart_item.item_qty
+			removeitem(cart_item.id, cart_item.item_qty-item_qty)
+		elsif item_qty > cart_item.item_qty
+			additem(cart_item.item_id, item_qty-cart_item.item_qty)
+		else
+			redirect_to :back
+		end
 	end
 
 	def removefromcart
-		cart_item = CartItem.find_by(id:params[:cart_item_id])
-		item = Item.find_by(id:cart_item.item_id)
-		item.update(qty:item.qty+cart_item.item_qty)
-		cart_item.destroy
+		cart_item_id = params[:cart_item_id].to_i
+		item_qty = params[:item_qty].to_i
 		
-		reloadVariables
+		removeitem( cart_item_id, item_qty )
 	end
 
-	def checkout
-		
-		#items_queue = Item.find_by(id:).joins('LEFT JOIN items ON cart_items.item_id=items.id') # Items in active cart
-		@cart_itemm = CartItem.where(cart_id:current_user.cart_id)
-		if @cart_itemm == nil || @cart_itemm.size < 1
-			reloadVariables
-			return
+	def checkoutcart
+		if params[:payment] != 'A'
+			redirect_to '/cart', alert:"Please give Char an A..." and return
 		end
 
-		@item_price = Array.new(@cart_itemm.size)
-		@total_price = 0
-		for i in 0..@cart_itemm.size-1
-			@item_price[i] = Item.find_by(id:@cart_itemm[i].item_id)
-			@aaa=@item_price[i].unit_price+200
-			if @item_price[i]==nil
-				@aaa='ffff'
-			end
-			@cart_itemm[i].update(item_unit_price:@item_price[i].unit_price)
-			@total_price += (@item_price[i].unit_price*@cart_itemm[i].item_qty)
+		cart_items = CartItem.where(cart_id:current_user.cart_id)
+		items = Array.new(cart_items.size)
+		total_price = 0
+		for i in 0..cart_items.size-1
+			items[i] = Item.find_by(id:cart_items[i].item_id)
+			items[i].update(qty_sold:items[i].qty_sold+cart_items[i].item_qty)
+			cart_items[i].update(item_unit_price:items[i].unit_price)
+			total_price += (items[i].unit_price*cart_items[i].item_qty)
 		end	
-		#@aaa=@total_price
-		current_user.update(cart_id:Cart.create(user_id:current_user.id).id)
 		
-		reloadVariables
+		Cart.find_by(id:current_user.cart_id).update(checkout_date:Time.now.getutc, total_price:total_price)
+		current_user.update(cart_id:Cart.create(user_id:current_user.id).id)
+			
+		redirect_to :back # render 'app/views/home/index.html.erb' # render :index
 	end
 
+	def clearcart
+		cart_items = CartItem.where(cart_id:current_user.cart_id)
+		if cart_items == nil || cart_items.size < 1
+			redirect_to :back, alert: "Cart is already empty." and return
+		end		
 
+		cart_items.each do |c|
+			item = Item.find_by(id:c.item_id)
+			item.update(qty:item.qty+c.item_qty)
+			c.destroy		
+		end
+		
+		redirect_to :back
+	end
 
 private
 
-	def reloadVariables
-		@all_items = Item.all # Item browsing
-		
-		@cart_items = CartItem.where(cart_id:current_user.cart_id)
-		# .joins('LEFT OUTER JOIN items ON cart_items.item_id=items.id') 
-		# Items in active cart
-		
-		# History
-		@user_carts = Cart.where(user_id:current_user.id).where.not(id:current_user.cart_id)
-		# @aaa = @cart_items[0].attribute_names;
-		@orders = Array.new(@user_carts.size)
-		@order_items = Array.new(@orders.size)
-		for i in 0..@user_carts.size-1
-			@orders[i] = CartItem.where(cart_id:@user_carts[i].id)
-			@order_items[i]=Array.new(@orders[i].size)
-			for j in 0..@orders[i].size-1
-				@order_items[i][j]=Item.find_by(id:@orders[i][j].item_id)
-			end
+	def additem( item_id, item_qty )
+		item = Item.find_by(id:item_id)
+		if item.qty < item_qty
+			redirect_to :back, alert: "Item out of stock." and return
 		end
+		item.update(qty:item.qty-item_qty)
 		
-		render 'app/views/home/index.html.erb' # Go to home page
+		cart_item = CartItem.find_by(cart_id:current_user.cart_id, item_id:item_id)
+		if cart_item==nil
+			cart_item = CartItem.create(cart_id:current_user.cart_id, item_id:item_id, item_qty:0) 
+		end
+		cart_item.update(item_qty:cart_item.item_qty+item_qty)	
+		
+		redirect_to :back # render 'app/views/home/index.html.erb' # render :index
 	end
 
+	def removeitem( cart_item_id, item_qty )
+		cart_item = CartItem.find_by(id:cart_item_id)
+		if cart_item.item_qty < item_qty
+			redirect_to :back, alert: "Cart doesn't contain item(s)." and return
+		end
+
+		cart_item.update(item_qty:cart_item.item_qty-item_qty) 
+
+		item = Item.find_by(id:cart_item.item_id)
+		item.update(qty:item.qty+item_qty)
+		
+		if cart_item.item_qty<=0
+			cart_item.destroy
+		end
+		
+		redirect_to :back # render 'app/views/home/index.html.erb' # render :index
+	end
+
+	def reloadVariables
+		# get checkout details of all_items
+		@top_items = Item.order(qty_sold: :desc).where("qty>0").limit(10)
+		@all_items = Item.all
+
+		@current_cart_items = CartItem.where(cart_id:current_user.cart_id)
+		@current_items = Array.new(@current_cart_items.size)
+		@current_total_price = 0
+		@current_total_qty = 0
+		for i in 0..@current_cart_items.size-1
+			@current_items[i]=Item.find_by(id:@current_cart_items[i].item_id)
+			@current_total_price+=(@current_cart_items[i].item_qty)*(@current_items[i].unit_price)
+			@current_total_qty+=@current_cart_items[i].item_qty
+		end
+		
+		@past_carts = Cart.where(user_id:current_user.id).where.not(id:current_user.cart_id)
+		@past_cart_items = Array.new(@past_carts.size)
+		@past_items = Array.new(@past_carts.size)
+		for i in 0..@past_carts.size-1
+			@past_cart_items[i] = CartItem.where(cart_id:@past_carts[i].id)
+			@past_items[i]=Array.new(@past_cart_items[i].size)
+			for j in 0..@past_cart_items[i].size-1
+				@past_items[i][j]=Item.find_by(id:@past_cart_items[i][j].item_id)
+			end
+		end
+	end
+	
 end
